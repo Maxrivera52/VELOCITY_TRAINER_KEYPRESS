@@ -1,4 +1,5 @@
 //window.addEventListener('keydown', (event) => { window.alert('event') });
+
 export default class View {
     constructor() {
         this.model = null;
@@ -10,19 +11,28 @@ export default class View {
             btn.style.cssText = 'height:40px'
         }
         this.btnPlay = document.getElementById('btnPlay');
-        this.btnPlay.onclick = ;
+        this.btnPlay.onclick = () => this.initCount();
+
 
     }
+
+    //render-view
 
     setModel(model) {
         this.model = model;
     }
 
+    toggleDisplay() {
+        const display = document.getElementById('display_time');
+        display.classList.toggle('invisible');
+        console.log('changing');
+    }
+
     initCount() {
-        let second = 10;
+        let second = 2;
         if (this.startSt == false) {
             this.startSt = true;
-            secondLenght = second;
+            let secondLenght = second;
             this.numberGame += 1;
             const scoreTxt = document.getElementById('score');
             let score = 0;
@@ -32,33 +42,52 @@ export default class View {
                 score += 1;
                 scoreTxt.innerHTML = score
             }
-            const display = document.getElementById('display_time');
-            display.classList.toggle('invisible');
-            const time = document.getElementById('time');
+            this.toggleDisplay();
+
             var timer = setInterval(() => {
+                second -= 1;
+                const time = document.getElementById('time');
+                time.innerHTML = second;
                 if (second == 1) {
                     window.removeEventListener('keydown', write);
                     clearInterval(timer);
                     console.log('¿' + second)
-                    startSt = false;
-                    display.classList.toggle('invisible');
-                    this.createRow(this.numberGame, secondLenght, score);
+                    this.startSt = false;
+                    this.toggleDisplay();
+                    this.addScore(secondLenght, score);
                 }
-                second -= 1;
-                time.innerHTML = second;
-            }, 1000)
-        } else {
 
+            }, 1000);
+        } else {
+            this.toggleDisplay();
+            console.log('nothing')
         }
     }
+    save(scoreO) {
+        this.model.save(scoreO);
+    }
 
-    createRow(numberGame, secondL, score) {
+    addScore(secondL, score) {
+        let result = (score / secondL).toFixed(2)
+        let scoreO = {
+            id: null,
+            seconds: secondL,
+            keysNum: score,
+            result: result
+        }
+
+        this.createRow(scoreO);
+        this.save(scoreO);
+    }
+
+    createRow(scoreO) {
         const row = table.insertRow();
-        row.setAttribute('id', numberGame + 1);
+        row.setAttribute('id', this.numberGame + 1);
         row.innerHTML = `
-        <td>${numberGame}</td>
-        <td>${secondL}s</td>
-        <td>${score}</td>
-        <td>${(score*6/60).toFixed(2)}ps</td>`;
+        <td>${this.numberGame}</td>
+        <td>${scoreO.seconds}s</td>
+        <td>${scoreO.keysNum}</td>
+        <td>${scoreO.result}ps</td>`;
+
     }
 }
