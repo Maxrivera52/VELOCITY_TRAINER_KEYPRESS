@@ -1,0 +1,43 @@
+.main {
+    max-width: 400px;
+    min-height: 500px;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+.btn-play {
+    width: 100%;
+}
+
+.timer-cont {
+    width: 100%;
+    height: 50px;
+}
+
+.wordS {
+    display: inline-block;
+    box-sizing: content-box;
+    background-color: aqua;
+}
+
+.card-title {
+    margin-bottom: 10px;
+    background-color: aliceblue;
+}
+
+.btn-container {
+    width: 100%;
+    background: #ccc;
+}
+
+.main-btn {
+    width: 150px;
+    height: 150px;
+    background-color: #abd;
+    margin: auto;
+    border: #fff solid 10px;
+    border-radius: 50%;
+    transition: background, height 2s;
+}
