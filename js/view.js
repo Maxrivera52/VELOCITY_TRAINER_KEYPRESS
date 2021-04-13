@@ -1,22 +1,41 @@
 //window.addEventListener('keydown', (event) => { window.alert('event') });
-
 export default class View {
     constructor() {
         this.model = null;
         this.startSt = false;
         this.numberGame = 0;
+
         const btn = document.getElementById('button_press');
         btn.onclick = () => {
-            btn.style.background = "red";
-            btn.style.cssText = 'height:40px'
+            btn.style.cssText = "transition:background 1s; background-color:#777;"
         }
         this.btnPlay = document.getElementById('btnPlay');
         this.btnPlay.onclick = () => this.initCount();
-
+        this.clear = document.getElementById('clear');
+        this.clear.onclick = () => this.clearScore();
+        this.playing = false;
 
     }
 
+    getScores() {
+        return this.model.getScore();
+    }
+
+    playAudio() {
+        var audio = document.getElementById('audio');
+        this.playing = true;
+        if (this.playing == true) {
+            audio.fastSeek(0);
+        }
+        audio.play();
+        this.playing == false;
+    }
+
     //render-view
+    render() {
+        const scores = this.sortScore();
+        scores.forEach(obj => { this.createRow(obj) });
+    }
 
     setModel(model) {
         this.model = model;
@@ -25,22 +44,42 @@ export default class View {
     toggleDisplay() {
         const display = document.getElementById('display_time');
         display.classList.toggle('invisible');
-        console.log('changing');
     }
 
     initCount() {
-        let second = 2;
+        //const pointer = document.getElementById('pointer');
+        let second = 10;
         if (this.startSt == false) {
             this.startSt = true;
             let secondLenght = second;
             this.numberGame += 1;
             const scoreTxt = document.getElementById('score');
-            let score = 0;
+            const btnPress = document.getElementById('button_press');
+            let keys = 0;
             window.addEventListener('keydown', write);
+            window.addEventListener('keyup', sizec);
+
+            function sizec() {
+                scoreTxt.style.fontSize = "20px";
+                btnPress.style.cssText = 'heigth: 150px;width: 150px;';
+            }
 
             function write() {
-                score += 1;
-                scoreTxt.innerHTML = score
+                keys += 1;
+                //
+                var audio = document.getElementById('audio');
+                this.playing = true;
+                if (this.playing == true) {
+                    //audio.fastSeek(0.01);
+                    audio.pause();
+                }
+                audio.play();
+                this.playing == false;
+                //
+                scoreTxt.innerHTML = keys;
+                scoreTxt.style.fontSize = "30px";
+                btnPress.style.cssText = 'height: 200px;width: 200px;';
+                //
             }
             this.toggleDisplay();
 
@@ -51,15 +90,14 @@ export default class View {
                 if (second == 1) {
                     window.removeEventListener('keydown', write);
                     clearInterval(timer);
-                    console.log('¿' + second)
                     this.startSt = false;
                     this.toggleDisplay();
-                    this.addScore(secondLenght, score);
+                    this.addScore(secondLenght, keys);
+                    this.clearScreen();
+                    this.render();
                 }
-
             }, 1000);
         } else {
-            this.toggleDisplay();
             console.log('nothing')
         }
     }
@@ -67,27 +105,63 @@ export default class View {
         this.model.save(scoreO);
     }
 
-    addScore(secondL, score) {
-        let result = (score / secondL).toFixed(2)
+    sortScore() {
+        const scores = this.getScores();
+
+        function sortData(data, key, orden) {
+            return data.sort(function(a, b) {
+                var x = a[key],
+                    y = b[key];
+
+                if (orden === 'asc') {
+                    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+                }
+
+                if (orden === 'desc') {
+                    return ((x > y) ? -1 : ((x < y) ? 1 : 0));
+                }
+            });
+        }
+        const scores_sort = sortData(scores, 'keysNum', 'desc');
+        return scores_sort;
+    }
+
+    addScore(secondL, keys) {
+        let result = (keys / secondL).toFixed(2)
         let scoreO = {
             id: null,
             seconds: secondL,
-            keysNum: score,
+            keysNum: keys,
             result: result
         }
-
-        this.createRow(scoreO);
         this.save(scoreO);
     }
 
+    clearScore() {
+        this.clearScreen();
+        this.model.clearScore();
+    }
+
+    clearScreen() {
+        const scores = this.getScores();
+        for (let i = 0; i < scores.length; i++) {
+            var row = document.getElementById((i + 1));
+            if (!row) {
+                break;
+            }
+            row.remove();
+        };
+    }
+
     createRow(scoreO) {
+        const table = document.getElementById('table')
+        let long = table.rows.length - 1;
         const row = table.insertRow();
-        row.setAttribute('id', this.numberGame + 1);
+        row.setAttribute('id', long);
         row.innerHTML = `
-        <td>${this.numberGame}</td>
+        <td>${long}</td>
         <td>${scoreO.seconds}s</td>
         <td>${scoreO.keysNum}</td>
         <td>${scoreO.result}ps</td>`;
-
     }
 }
