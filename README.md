@@ -2,4 +2,4 @@
 A trainer of Key press velocity for Rhythm Games
 
 
-Set the master branch. 
+See the master branch. 
