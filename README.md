@@ -4,5 +4,5 @@ A trainer of Key press velocity for Rhythm Games
 
 Serve the folder with for example Node.js or another server.
 In case Node.js execute this in the console:
-  npm install serve
-  serve -l 3100
+  "npm install serve" and the next:
+  "serve -l 3100"
